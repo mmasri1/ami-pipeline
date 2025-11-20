@@ -13,5 +13,28 @@
 * Signs images using [cosign](https://github.com/sigstore/cosign)
 * Publishes the AMI to AWS
 
+**Requirements**
+- [Packer](https://www.packer.io/) installed and in your $PATH
+
+**Setup**
+1. Make sure scripts are executable:
+```bash
+chmod +x *.sh
+```
+
+2. Building an AMI
+
+Run the main build script:
+```bash
+./build_ami.sh
+```
+
+This script will:
+- [X] Build a base Ubuntu image using Packer
+- [ ] Apply OS hardening and CIS benchmarks
+- [ ] Update packages and dependencies
+- [ ] Run security scans (Trivy, Lynis)
+- [ ] Sign the resulting AMI
+
 **Contributing:**
 Contributions are welcome. Feel free to open issues or submit pull requests.
