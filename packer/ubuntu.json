@@ -29,6 +29,24 @@
         "sudo apt upgrade -y",
         "sudo apt install -y vim curl git"
       ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'Installing Ubuntu Security Guide...'",
+        "sudo add-apt-repository ppa:ubuntu-security/ppa -y",
+        "sudo apt update -y",
+        "sudo apt install -y usg"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'Running CIS Level 1 Hardening...'",
+        "sudo usg fix cis_level1_server",
+        "echo 'Generating report...' ",
+        "sudo usg cis_level1_server > /home/ubuntu/cis_report.txt"
+      ]
     }
   ]
 }
