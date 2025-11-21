@@ -1,6 +1,6 @@
 # ami-pipeline
 
-`ami-pipeline` helps you build secure Ubuntu AMIs fast. It automates the process of hardening, scanning, and signing images.
+`ami-pipeline` helps you build secure Ubuntu AMIs fast. It automates the process of hardening,  and scanning images.
 
 **What it does:**
 * Creates Ubuntu images using [Packer](https://www.packer.io/)
@@ -10,7 +10,6 @@
 * Runs security scans with:
   * [Trivy](https://github.com/aquasecurity/trivy)
   * [Lynis](https://github.com/CISOfy/lynis)
-* Signs images using [cosign](https://github.com/sigstore/cosign)
 * Publishes the AMI to AWS
 
 **Prerequisites**
@@ -42,10 +41,9 @@ Run the main build script:
 
 This script will:
 - [X] Build a base Ubuntu image using Packer
-- [ ] Apply OS hardening and CIS benchmarks
-- [ ] Update packages and dependencies
-- [ ] Run security scans (Trivy, Lynis)
-- [ ] Sign the resulting AMI
+- [X] Apply OS hardening and CIS benchmarks
+- [X] Update packages and dependencies
+- [X] Run security scans (Trivy, Lynis)
 
 **Contributing:**
 Contributions are welcome. Feel free to open issues or submit pull requests.
