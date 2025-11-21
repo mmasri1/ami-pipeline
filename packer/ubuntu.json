@@ -64,6 +64,62 @@
         "echo 'Running Lynis audit...'",
         "sudo lynis audit system --quiet --logfile /home/ubuntu/lynis.log"
       ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo '---> UFW Firewall Setup'",
+        "sudo apt install -y ufw",
+        "sudo ufw default deny incoming",
+        "sudo ufw default allow outgoing",
+        "sudo ufw allow ssh",
+        "sudo ufw --force enable",
+
+        "echo '---> SSH Hardening'",
+        "sudo sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config",
+        "sudo sed -i 's/^PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config",
+        "sudo sed -i 's/^#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config",
+        "sudo sed -i 's/^PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config",
+        "sudo sed -i 's/^#X11Forwarding yes/X11Forwarding no/' /etc/ssh/sshd_config",
+        "sudo systemctl restart sshd",
+
+        "echo '---> Disabling IPv6'",
+        "sudo bash -c 'cat > /etc/sysctl.d/99-disable-ipv6.conf <<EOF\nnet.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1\nEOF'",
+        "sudo sysctl --system",
+
+        "echo '---> Installing Fail2ban'",
+        "sudo apt install -y fail2ban",
+        "sudo bash -c 'cat > /etc/fail2ban/jail.local <<EOF\n[sshd]\nenabled = true\nport = ssh\nfilter = sshd\nlogpath = /var/log/auth.log\nmaxretry = 5\nbanaction = ufw\nEOF'",
+        "sudo systemctl enable fail2ban",
+        "sudo systemctl restart fail2ban",
+
+        "echo '---> Kernel Hardening'",
+        "sudo bash -c 'cat > /etc/sysctl.d/99-kernel-hardening.conf <<EOF\n# Prevent IP spoofing\nnet.ipv4.conf.all.rp_filter = 1\nnet.ipv4.conf.default.rp_filter = 1\n\n# Disable kernel sysrq\nkernel.sysrq = 0\n\n# Disable packet forwarding\nnet.ipv4.ip_forward = 0\n\n# TCP SYN cookies\nnet.ipv4.tcp_syncookies = 1\n\n# Ignore ICMP broadcasts\nnet.ipv4.icmp_echo_ignore_broadcasts = 1\n\n# Ignore bogus ICMP errors\nnet.ipv4.icmp_ignore_bogus_error_responses = 1\nEOF'",
+        "sudo sysctl --system",
+
+        "echo '---> Removing Snap'",
+        "sudo systemctl stop snapd",
+        "sudo apt purge -y snapd",
+        "sudo rm -rf /snap /var/snap /var/lib/snapd /var/cache/snapd",
+
+        "echo '---> Enforcing AppArmor'",
+        "sudo apt install -y apparmor apparmor-utils",
+        "sudo aa-enforce /etc/apparmor.d/* || true",
+
+        "echo '---> Enabling auditd'",
+        "sudo apt install -y auditd audispd-plugins",
+        "sudo systemctl enable auditd",
+        "sudo systemctl start auditd",
+
+        "echo '---> Basic audit rules'",
+        "sudo bash -c 'cat > /etc/audit/rules.d/cis.rules <<EOF\n-w /etc/passwd -p wa -k passwd_changes\n-w /etc/group -p wa -k group_changes\n-w /etc/shadow -p wa -k shadow_changes\n-w /etc/sudoers -p wa -k sudoers_changes\nEOF'",
+        "sudo augenrules --load",
+
+        "echo '---> Cloud-init config'",
+        "sudo sed -i 's/^disable_root: false/disable_root: true/' /etc/cloud/cloud.cfg",
+        "sudo sed -i 's/^ssh_pwauth:.*$/ssh_pwauth:   0/' /etc/cloud/cloud.cfg",
+        "sudo touch /etc/cloud/cloud-init.disabled"
+      ]
     }
   ]
 }
