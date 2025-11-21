@@ -26,26 +26,43 @@
       "type": "shell",
       "inline": [
         "sudo apt update -y",
-        "sudo apt upgrade -y",
-        "sudo apt install -y vim curl git"
+        "sudo apt full-upgrade -y",
+        "sudo apt autoremove -y",
+        "sudo apt autoclean -y"
       ]
     },
+
     {
       "type": "shell",
       "inline": [
-        "echo 'Installing Ubuntu Security Guide...'",
-        "sudo add-apt-repository ppa:ubuntu-security/ppa -y",
+        "echo 'Installing Trivy...'",
+        "sudo apt install -y wget apt-transport-https gnupg lsb-release",
+        "wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -",
+        "echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list",
         "sudo apt update -y",
-        "sudo apt install -y usg"
+        "sudo apt install -y trivy"
       ]
     },
     {
       "type": "shell",
       "inline": [
-        "echo 'Running CIS Level 1 Hardening...'",
-        "sudo usg fix cis_level1_server",
-        "echo 'Generating report...' ",
-        "sudo usg cis_level1_server > /home/ubuntu/cis_report.txt"
+        "echo 'Running Trivy scan...'",
+        "sudo trivy fs --severity HIGH,CRITICAL --timeout 15m --exit-code 0 / > /home/ubuntu/trivy-report.txt"
+      ]
+    },
+
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'Installing Lynis...'",
+        "sudo apt install -y lynis"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo 'Running Lynis audit...'",
+        "sudo lynis audit system --quiet --logfile /home/ubuntu/lynis.log"
       ]
     }
   ]
