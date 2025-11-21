@@ -13,8 +13,19 @@
 * Signs images using [cosign](https://github.com/sigstore/cosign)
 * Publishes the AMI to AWS
 
-**Requirements**
-- [Packer](https://www.packer.io/) installed and in your $PATH
+**Prerequisites**
+
+* [Packer](https://www.packer.io/) installed and available in your `$PATH`
+* **AWS credentials configured** for Packer, either by:
+
+  * Running `aws configure` to set up your access key, secret key, and region, **or**
+  * Exporting credentials manually:
+
+    ```bash
+    export AWS_ACCESS_KEY_ID="access_key_id"
+    export AWS_SECRET_ACCESS_KEY="secret_access_key"
+    export AWS_DEFAULT_REGION="region"
+    ```
 
 **Setup**
 1. Make sure scripts are executable:
